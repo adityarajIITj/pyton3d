@@ -1,173 +1,215 @@
-# 🪐 Pyton3D
+# Pyton3D
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-brightgreen.svg)](https://www.python.org/downloads/)
-[![Physics Engine](https://img.shields.io/badge/Physics-6--DOF%20Rigid%20Body-orange.svg)]()
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
+[![Python: 3.9+](https://img.shields.io/badge/Python-3.9+-brightgreen.svg)](https://www.python.org/downloads/)
+[![Physics Engine: Built From Scratch](https://img.shields.io/badge/Physics_Engine-Built_From_Scratch-success.svg)]()
+[![Platform: Cross-Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
 
-> **Pyton3D** is a lightweight, high-performance, pure-Python 3D Physics Simulation Engine and CAD Workbench. It combines 6-Degrees-of-Freedom (6-DOF) Newtonian mechanics with an interactive desktop studio, real-time 3D viewport, dedicated tools for gravity and collision physics, and zero heavy binary C++ dependencies.
+Pyton3D is a full-featured, 6-Degrees-of-Freedom (6-DOF) 3D rigid body physics simulation engine and interactive CAD workbench, **built completely from scratch in pure Python**.
+
+It does not rely on third-party physics libraries or native wrappers (such as PyBullet, Box2D, ODE, or PhysX). Every component—from foundational linear algebra and quaternion kinematics to 3D Separating Axis Theorem (SAT) collision detection, iterative impulse manifolds, and numerical integrators—is implemented from first principles.
 
 ---
 
-## 📸 Overview
+## Key Highlights
+
+- **Built 100% From Scratch**: Zero proprietary or binary physics dependencies.
+- **Full 6-DOF Dynamics**: Accurate tracking of linear momentum, angular velocity, world-space inertia tensor transformations, and quaternion rotations.
+- **Multiple Numerical Integrators**: Symplectic Euler, Velocity Verlet, Runge-Kutta 4th Order (RK4), and Explicit Euler.
+- **Robust Collision Detection**: Broad-phase AABB culling and Narrow-phase SAT for Oriented Bounding Boxes (OBB), Spheres, and Half-Space Planes.
+- **Constraint and Contact Solver**: Iterative normal impulse resolution, 2-axis Coulomb friction cones, Baumgarte stabilization, damped springs, and distance joints.
+- **Interactive CAD Desktop Studio**: Integrated graphical workbench with real-time 3D viewport, dedicated tools for object spawning, gravity configuration, collision matrix inspection, and scene JSON serialization.
+
+---
+
+## Architectural Overview
 
 ```
 +-----------------------------------------------------------------------------+
-|  Pyton3D CAD Simulation Studio & Workbench                                  |
+|                     Pyton3D System Architecture                             |
 +-----------------------------------------------------------------------------+
-|  [File] [Add Objects] [Tools & Windows] [Physics Labs]                      |
+|  1. CAD Studio Interface (Tkinter + Embedded Matplotlib 3D Viewport)        |
+|     - Scene Hierarchy Inspector & Property Panels                           |
+|     - Floating Tool Windows: Object Spawner, Gravity, Collision Solver      |
+|     - Standard Navigation Toolbar: Orbit, Pan, Zoom, Reset, Save Snapshot   |
 +-----------------------------------------------------------------------------+
-|  [▶ Play] [⏭ Step] [🔄 Reset] [➕ Add Block] [🌍 Gravity] [⚙️ Collisions]   |
-+----------------------+------------------------------------------------------+
-|  📦 Hierarchy & Tabs |  3D Scientific CAD Viewport (Matplotlib 3D)          |
-|  • Active Bodies     |     Z (Elevation)                                    |
-|  • Mass & Positions  |      |   /                                           |
-|  • Material Presets  |      |  /___ X (Horizontal)                           |
-|  • Visual Overlays   |     /                                                |
-|                      |    Y (Depth)                                         |
-|  Eye Displays:       |                                                      |
-|  ☑ AABB Wireframes   |  • Navigation Toolbar: Home, Pan, Zoom, Save         |
-|  ☑ Contact Normals   |  • Real-time Telemetry HUD: FPS, Energy, Contacts    |
-+----------------------+------------------------------------------------------+
+|  2. Constraint and Impulse Solver                                           |
+|     - Normal Impulse with Restitution Recovery                              |
+|     - Dual-Axis Orthogonal Coulomb Friction Formulation                    |
+|     - Baumgarte Penetration Slop Stabilization                              |
+|     - Constraints: Damped Springs, Inelastic Distance Rods, Hinge Pivots    |
++-----------------------------------------------------------------------------+
+|  3. Collision Detection Pipeline                                            |
+|     - Broad-Phase: Spatial Axis-Aligned Bounding Box (AABB) Culling         |
+|     - Narrow-Phase: Separating Axis Theorem (SAT) across 15 OBB axes        |
+|     - Contact Manifolds: Contact Points, Penetration Depths, Normal Vectors |
++-----------------------------------------------------------------------------+
+|  4. 6-DOF Rigid Body Dynamics                                               |
+|     - Mass, Linear Velocity, World-Space Inertia Tensor Translation         |
+|     - Orientation Quaternions with Optimized Rodrigues Rotation Formulation |
+|     - Dynamic Sleep and Wake Thresholding                                   |
++-----------------------------------------------------------------------------+
+|  5. Foundational Mathematics Core                                           |
+|     - Vec3, Mat3, Mat4, Quaternion, Ray, Plane, AABB, OBB                   |
++-----------------------------------------------------------------------------+
 ```
 
 ---
 
-## ✨ Features
+## Core Features
 
-### 🧮 1. Pure-Python Physics Dynamics (6-DOF)
-- **State Vectors**: Position, Linear Velocity, Orientation Quaternion, Angular Velocity, Inertia Tensor in World Coordinates.
-- **4 Numerical Integrators**:
-  - `Symplectic Euler` *(Default, energy-conserving)*
-  - `Velocity Verlet` *(Time-reversible)*
-  - `Runge-Kutta 4th Order (RK4)` *(High accuracy)*
-  - `Explicit Euler` *(Baseline comparison)*
-- **Rodrigues Rotation Quaternion Optimization**: Vector rotations computed in 15 FLOPs without gimbal lock.
-- **Sleep / Wake Optimization**: Automatically puts resting bodies to sleep to preserve computational bandwidth.
+### 1. Mathematics and Kinematics
+- **Vector Operations**: Custom `Vec3` class with optimized dot products, cross products, normalization, and geometric projections.
+- **Rotations via Quaternions**: Fast vector rotation via the Rodrigues formula:
+  $$\vec{v}\' = \vec{v} + 2 q_w (\vec{q}_v \times \vec{v}) + 2 (\vec{q}_v \times (\vec{q}_v \times \vec{v}))$$
+  Executes in 15 floating-point operations per rotation, eliminating gimbal lock and avoiding costly full matrix constructions.
+- **Dynamic Inertia Tensors**: $3 \times 3$ matrix representations transformed into world coordinates per frame:
+  $$\mathbf{I}_{world}^{-1} = \mathbf{R} \mathbf{I}_{local}^{-1} \mathbf{R}^T$$
 
-### 💥 2. SAT Collision Pipeline & Manifolds
-- **Broad-Phase**: Fast Axis-Aligned Bounding Box (AABB) culling.
-- **Narrow-Phase**:
-  - **Separating Axis Theorem (SAT)** testing all 15 potential separating axes for Oriented Bounding Boxes (OBBs).
-  - **Sphere vs Sphere**, **Sphere vs Box**, **Plane vs Box**, **Plane vs Sphere**.
-- **Contact Manifolds**: Contact points, penetration depth, and normal conventions.
+### 2. Collision Detection
+- **Separating Axis Theorem (SAT)**: Evaluates 15 potential separating axes for Oriented Bounding Boxes (3 face normals of A, 3 face normals of B, and 9 edge cross products).
+- **Supported Geometry Pairs**:
+  - Box vs Box (OBB SAT)
+  - Sphere vs Sphere
+  - Sphere vs Box
+  - Plane vs Box
+  - Plane vs Sphere
 
-### ⚙️ 3. Impulse & Constraint Solver
-- **Iterative Normal Impulse**: Restitution $(e)$ velocity rebound.
-- **Dual-Axis Coulomb Friction**: Computes 2 orthogonal tangential friction impulses $(\mu_s, \mu_k)$.
-- **Baumgarte Stabilization**: Positional recovery slop to eliminate body sinking and jitter.
-- **Physical Constraints**:
-  - `SpringConstraint`: Damped harmonic oscillators (Hooke\'s law + velocity damping).
-  - `DistanceConstraint`: Rigid inelastic distance locks (e.g. Newton\'s cradle).
-  - `HingeConstraint`: Revolute rotational joint axes.
+### 3. Contact Solver and Constraints
+- **Sequential Impulse Resolution**: Calculates normal impulse $j_n$ based on effective contact mass $m_{eff}$ and coefficient of restitution $e$.
+- **Coulomb Dry Friction**: Enforces static and kinetic friction limits along two orthogonal tangent directions:
+  $$|j_t| \le \mu j_n$$
+- **Joints and Springs**:
+  - `SpringConstraint`: Damped harmonic oscillators utilizing Hooke\'s law with velocity damping.
+  - `DistanceConstraint`: Rigid distance constraints maintaining fixed separation between anchor points.
 
-### 🌍 4. Planetary Forces & Fluid Mechanics
-- **Planetary Gravity**: Earth ($-9.81$), Moon ($-1.62$), Mars ($-3.71$), Zero-G ($0.0$), Jupiter ($-24.79$), or custom 3-axis vectors.
-- **Aerodynamic Air Drag**: Linear and quadratic resistance ($F = -(k_1 v + k_2 v^2) \hat{v}$).
-- **Archimedes Buoyancy**: Fluid immersion, displaced volume calculation, and fluid drag.
-
-### 🖥️ 5. CAD Studio Desktop Application
-- **Standard File Operations**: New Scene (`Ctrl+N`), Open JSON (`Ctrl+O`), Save JSON (`Ctrl+S`), Export Snapshot (`PNG`).
-- **Dedicated Floating Windows**:
-  - **➕ Object Spawner**: Configure dimensions, material, mass, spawn location, and launch velocity.
-  - **🌍 Gravity & Forces Workbench**: Tune gravitational vectors, fluid buoyancy, and drag.
-  - **⚙️ Collision Solver & Materials**: Tune solver iterations, penetration recovery %, and inspect materials.
-- **Scene Hierarchy Inspector**: Real-time Treeview of bodies; delete or wake individual bodies.
-- **Visual Overlays**: Toggle AABBs, collision contact normals & points, velocity vectors, and grid planes.
-- **Built-in CAD Camera Presets**: Isometric view, Top-Down plan, Front elevation, Side profile.
+### 4. Environmental Forces
+- **Planetary Gravity**: Presets for Earth ($-9.81\text{ m/s}^2$), Moon ($-1.62\text{ m/s}^2$), Mars ($-3.71\text{ m/s}^2$), Zero Gravity ($0\text{ m/s}^2$), or user-defined 3-axis vectors.
+- **Aerodynamic Drag**: Linear and quadratic resistance models.
+- **Archimedes Buoyancy**: Computes submerged volume displacement and upward buoyant force in fluid media.
 
 ---
 
-## 🔬 7 Pre-built Physics Labs
+## Interactive CAD Studio Application
 
-| Lab Preset | Description |
+The application provides a comprehensive desktop graphical interface:
+
+- **File Management**:
+  - `New Scene` (`Ctrl+N`): Resets the simulation to a clean ground plane.
+  - `Open Scene` (`Ctrl+O`): Loads complete scene states from structured JSON files.
+  - `Save Scene` (`Ctrl+S`): Serializes all active bodies, colliders, materials, and forces to JSON.
+  - `Export Snapshot`: Renders high-resolution image captures of the 3D viewport.
+- **Dedicated Tool Windows**:
+  - **Object Spawner**: Configure shape (Box, Sphere), half-extents, radius, material properties, mass, spawn location, and launch velocity.
+  - **Gravity and Forces Workbench**: Live interactive sliders for gravity axes, air drag, and fluid buoyancy parameters.
+  - **Collision Solver and Materials**: Adjust impulse iterations ($1-30$), penetration recovery percentages, and inspect material coefficients.
+- **Scene Hierarchy**: Treeview displaying active rigid bodies, mass, and elevation. Supports single-body deletion and global waking.
+- **Visual Diagnostics**: Independent toggles for AABB wireframes, contact normal vectors, linear velocity indicators, and coordinate grid panes.
+
+---
+
+## Demonstration Labs
+
+Pyton3D includes 7 pre-configured classical mechanics labs:
+
+| Lab Name | Description |
 | :--- | :--- |
-| **🧪 1. Box Stacking** | Equilibrium stability test for 5 stacked boxes. |
-| **🧪 2. Sphere Avalanche** | Multi-body sphere packing and avalanche mechanics. |
-| **🧪 3. Mixed Collisions** | Composite shapes with different friction and bounciness properties. |
-| **🧪 4. Springs & Pendulums** | 5-node harmonic oscillator chain under gravity. |
-| **🧪 5. Jenga Tower Impact** | 24-piece interlocking tower struck by a high-velocity wrecking projectile. |
-| **🧪 6. Fluid Buoyancy** | Floating wooden blocks bobbing in water with viscous fluid damping. |
-| **🧪 7. Newton\'s Cradle** | Elastic momentum and kinetic energy transfer across 5 suspended steel spheres. |
+| **1. Box Stacking** | Verification of equilibrium stability and contact manifold convergence for stacked rigid bodies. |
+| **2. Sphere Avalanche** | Multi-body sphere packing, granular flow, and dynamic rolling friction. |
+| **3. Mixed Collisions** | Complex interactions between diverse geometric shapes and material properties. |
+| **4. Springs and Pendulums** | Multi-link damped harmonic spring chain demonstrating coupled oscillations. |
+| **5. Jenga Tower Impact** | Interlocking 24-piece structural tower subjected to high-velocity projectile impact. |
+| **6. Fluid Buoyancy** | Floating wooden bodies experiencing Archimedes buoyancy, fluid drag, and surface equilibrium. |
+| **7. Newton\'s Cradle** | Conservation of momentum and kinetic energy transfer through five suspended elastic bodies. |
 
 ---
 
-## 🚀 Installation & Getting Started
+## Installation and Usage
 
 ### Prerequisites
-- Python 3.9+
+- Python 3.9 or higher
 - `numpy`
 - `matplotlib`
 
-### Clone and Run
+### Getting Started
+
 ```bash
+# 1. Clone repository
 git clone https://github.com/adityarajIITj/pyton3d.git
 cd pyton3d
 
-# Install requirements
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# Launch Pyton3D CAD Studio
+# 3. Launch Pyton3D Studio
 python main.py
 ```
 
 ---
 
-## ⌨️ Controls & Shortcuts
+## Headless Python API
 
-| Shortcut | Action |
-| :--- | :--- |
-| `SPACE` | Pause / Resume simulation |
-| `S` | Step forward by one frame tick |
-| `Ctrl + N` | Create a new blank scene with ground plane |
-| `Ctrl + O` | Open and load a saved scene JSON |
-| `Ctrl + S` | Save current scene configuration to JSON |
-| `A` | Toggle AABB bounding boxes |
-| `C` | Toggle contact normals and collision points |
-| `V` | Toggle linear velocity vectors |
-| `G` | Toggle 3D grid floor |
-| `Left Click + Drag` | 3D Orbit Camera view |
-| `Right Click + Drag` | Zoom In / Out |
-| `Toolbar Home Button` | Reset viewport to default isometric CAD view |
-
----
-
-## 📖 Programmatic API Example
-
-You can also use Pyton3D as a headless physics engine in your own scripts:
+Pyton3D can also be imported as a standalone module in custom scripts or pipelines:
 
 ```python
 from pyton3d import PhysicsWorld, RigidBody, BoxCollider, SphereCollider, Materials, Vec3
 
-# 1. Create World
+# Initialize physics world
 world = PhysicsWorld(gravity=Vec3(0, -9.81, 0))
 
-# 2. Add Ground Plane
+# Add static ground plane
 ground = RigidBody(position=Vec3(0, -0.5, 0), is_static=True)
 ground.collider = BoxCollider(Vec3(10, 0.5, 10))
 ground.material = Materials.CONCRETE
 world.add_body(ground)
 
-# 3. Add Dynamic Body
-box = RigidBody(position=Vec3(0, 5, 0), mass=2.0)
+# Add dynamic wooden box
+box = RigidBody(position=Vec3(0, 5.0, 0), mass=2.5)
 box.collider = BoxCollider(Vec3(0.5, 0.5, 0.5))
 box.material = Materials.WOOD
 world.add_body(box)
 
-# 4. Step Physics
+# Step simulation loop
 for step in range(120):
     world.step(dt=1/60)
-    print(f"Step {step:03d} | Box Y: {box.position.y:.3f} m | Vel Y: {box.velocity.y:.3f} m/s")
+    print(f"Step {step:03d} | Elevation: {box.position.y:.3f} m | Velocity: {box.velocity.y:.3f} m/s")
 ```
 
 ---
 
-## 📜 License
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+## Keyboard and Viewport Controls
+
+| Input | Function |
+| :--- | :--- |
+| `SPACE` | Toggle pause and simulation execution |
+| `S` | Advance simulation by a single frame tick |
+| `Ctrl + N` | Create a new blank scene |
+| `Ctrl + O` | Open and load scene from JSON |
+| `Ctrl + S` | Save current scene configuration to JSON |
+| `A` | Toggle AABB bounding box wireframes |
+| `C` | Toggle contact normal vectors and collision points |
+| `V` | Toggle linear velocity direction vectors |
+| `G` | Toggle coordinate plane floor grid |
+| `Left Mouse Drag` | Orbit 3D camera |
+| `Right Mouse Drag` | Zoom viewport in and out |
+| `Toolbar Home Button` | Reset viewport to default isometric CAD perspective |
 
 ---
 
-## 👤 Author
+## Technical Documentation
+
+Detailed mathematical derivations, SAT collision projection algorithms, constraint formulations, and serialization specifications are documented in [DOCUMENTATION.md](DOCUMENTATION.md).
+
+---
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+---
+
+## Author
+
 **Aditya Raj**  
 Indian Institute of Technology Jodhpur (IIT Jodhpur)  
 GitHub: [@adityarajIITj](https://github.com/adityarajIITj)

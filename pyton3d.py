@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pyton3D - Comprehensive 3D Physics CAD Studio & Workbench
+Pyton3D - 3D Physics Simulation Engine and CAD Workbench (Built From Scratch)
 ==============================================================
 A complete rigid body physics simulation suite with interactive
 CAD GUI, dedicated control windows, object spawner, gravity &
@@ -1345,7 +1345,7 @@ class ObjectSpawnerWindow(tk.Toplevel):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
-        self.title("➕ Add Rigid Body Object")
+        self.title("Add Rigid Body Object")
         self.geometry("380x520")
         self.resizable(False, False)
         self.configure(bg="#232731")
@@ -1419,7 +1419,7 @@ class ObjectSpawnerWindow(tk.Toplevel):
         self.ent_vz = tk.Entry(f_v, width=4, bg="#2e3340", fg="white", insertbackground="white"); self.ent_vz.insert(0, "0.0"); self.ent_vz.pack(side="left", padx=1)
 
         # Action Button
-        btn_spawn = tk.Button(self, text="➕ Spawn Object Into Scene", bg="#2d6cb5", fg="white", font=("Segoe UI", 10, "bold"), relief="raised", command=self._spawn_object)
+        btn_spawn = tk.Button(self, text="Spawn Object Into Scene", bg="#2d6cb5", fg="white", font=("Segoe UI", 10, "bold"), relief="raised", command=self._spawn_object)
         btn_spawn.pack(fill="x", padx=15, pady=12)
 
     def _on_shape_change(self, event=None):
@@ -1469,7 +1469,7 @@ class GravityWindow(tk.Toplevel):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
-        self.title("🌍 Gravity & Forces Workbench")
+        self.title("Gravity and Environmental Forces")
         self.geometry("380x460")
         self.resizable(False, False)
         self.configure(bg="#232731")
@@ -1484,10 +1484,10 @@ class GravityWindow(tk.Toplevel):
 
         btn_f = tk.Frame(frame_pre, bg="#232731")
         btn_f.pack(fill="x", padx=5, pady=5)
-        tk.Button(btn_f, text="Earth 🌍", bg="#3a4150", fg="white", width=8, command=lambda: self._set_grav(0, -9.81, 0)).pack(side="left", padx=2)
-        tk.Button(btn_f, text="Moon 🌑", bg="#3a4150", fg="white", width=8, command=lambda: self._set_grav(0, -1.62, 0)).pack(side="left", padx=2)
-        tk.Button(btn_f, text="Mars 🪐", bg="#3a4150", fg="white", width=8, command=lambda: self._set_grav(0, -3.71, 0)).pack(side="left", padx=2)
-        tk.Button(btn_f, text="Zero-G 🛸", bg="#3a4150", fg="white", width=8, command=lambda: self._set_grav(0, 0.0, 0)).pack(side="left", padx=2)
+        tk.Button(btn_f, text="Earth (9.81 m/s²)", bg="#3a4150", fg="white", width=8, command=lambda: self._set_grav(0, -9.81, 0)).pack(side="left", padx=2)
+        tk.Button(btn_f, text="Moon (1.62 m/s²)", bg="#3a4150", fg="white", width=8, command=lambda: self._set_grav(0, -1.62, 0)).pack(side="left", padx=2)
+        tk.Button(btn_f, text="Mars (3.71 m/s²)", bg="#3a4150", fg="white", width=8, command=lambda: self._set_grav(0, -3.71, 0)).pack(side="left", padx=2)
+        tk.Button(btn_f, text="Zero Gravity (0 m/s²)", bg="#3a4150", fg="white", width=8, command=lambda: self._set_grav(0, 0.0, 0)).pack(side="left", padx=2)
 
         # Custom Vector
         frame_vec = tk.LabelFrame(self, text="Gravity Vector (m/s²)", bg="#232731", fg="#7ec4ff", font=("Segoe UI", 10, "bold"))
@@ -1546,7 +1546,7 @@ class CollisionWindow(tk.Toplevel):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.app = app
-        self.title("⚙️ Collision Solver & Materials")
+        self.title("Collision Solver and Material Properties")
         self.geometry("400x460")
         self.resizable(False, False)
         self.configure(bg="#232731")
@@ -1603,7 +1603,7 @@ class CollisionWindow(tk.Toplevel):
 class PhysicsStudioApp:
     def __init__(self, root: tk.Tk):
         self.root = root
-        self.root.title("Pyton3D — CAD Physics Simulation Studio & Workbench")
+        self.root.title("Pyton3D: 3D Physics Simulation Studio and CAD Workbench (Built From Scratch)")
         self.root.geometry("1240x800")
         self.root.configure(bg="#1a1e26")
 
@@ -1633,35 +1633,35 @@ class PhysicsStudioApp:
 
         # File Menu
         file_menu = tk.Menu(menubar, tearoff=0)
-        file_menu.add_command(label="📄 New Scene", command=self._on_file_new, accelerator="Ctrl+N")
-        file_menu.add_command(label="📂 Open Scene (.json)...", command=self._on_file_open, accelerator="Ctrl+O")
-        file_menu.add_command(label="💾 Save Scene (.json)...", command=self._on_file_save, accelerator="Ctrl+S")
+        file_menu.add_command(label="New Scene", command=self._on_file_new, accelerator="Ctrl+N")
+        file_menu.add_command(label="Open Scene (.json)...", command=self._on_file_open, accelerator="Ctrl+O")
+        file_menu.add_command(label="Save Scene (.json)...", command=self._on_file_save, accelerator="Ctrl+S")
         file_menu.add_separator()
-        file_menu.add_command(label="📸 Export Snapshot (.png)...", command=self._on_export_snapshot)
+        file_menu.add_command(label="Export Snapshot (.png)...", command=self._on_export_snapshot)
         file_menu.add_separator()
-        file_menu.add_command(label="❌ Exit", command=self.root.quit)
+        file_menu.add_command(label="Exit", command=self.root.quit)
         menubar.add_cascade(label="File", menu=file_menu)
 
         # Add Objects Menu
         add_menu = tk.Menu(menubar, tearoff=0)
-        add_menu.add_command(label="➕ Add Box Block...", command=self._open_spawner_dialog)
-        add_menu.add_command(label="➕ Add Sphere Object...", command=self._open_spawner_dialog)
+        add_menu.add_command(label="Add Box Block...", command=self._open_spawner_dialog)
+        add_menu.add_command(label="Add Sphere Object...", command=self._open_spawner_dialog)
         add_menu.add_separator()
-        add_menu.add_command(label="🎲 Spawn 10 Random Blocks", command=self._spawn_random_blocks)
-        add_menu.add_command(label="🌧️ Trigger Sphere Rain", command=self._spawn_sphere_storm)
+        add_menu.add_command(label="Spawn 10 Random Blocks", command=self._spawn_random_blocks)
+        add_menu.add_command(label="Spawn Sphere Rain", command=self._spawn_sphere_storm)
         menubar.add_cascade(label="Add Objects", menu=add_menu)
 
         # Tools & Dedicated Windows
         tools_menu = tk.Menu(menubar, tearoff=0)
-        tools_menu.add_command(label="➕ Object Spawner Window...", command=self._open_spawner_dialog)
-        tools_menu.add_command(label="🌍 Gravity & Forces Window...", command=self._open_gravity_dialog)
-        tools_menu.add_command(label="⚙️ Collision Solver & Materials...", command=self._open_collision_dialog)
+        tools_menu.add_command(label="Object Spawner Window...", command=self._open_spawner_dialog)
+        tools_menu.add_command(label="Gravity and Forces Window...", command=self._open_gravity_dialog)
+        tools_menu.add_command(label="Collision Solver and Material Properties...", command=self._open_collision_dialog)
         menubar.add_cascade(label="Tools & Windows", menu=tools_menu)
 
         # Demos Menu
         demos_menu = tk.Menu(menubar, tearoff=0)
         for demo_name in ["stack", "spheres", "mixed", "springs", "jenga", "buoyancy", "cradle"]:
-            demos_menu.add_command(label=f"🧪 {demo_name.capitalize()}", command=lambda d=demo_name: self._load_preset_demo(d))
+            demos_menu.add_command(label=f"{demo_name.capitalize()}", command=lambda d=demo_name: self._load_preset_demo(d))
         menubar.add_cascade(label="Physics Labs", menu=demos_menu)
 
         self.root.config(menu=menubar)
@@ -1670,20 +1670,20 @@ class PhysicsStudioApp:
         toolbar = tk.Frame(self.root, bg="#232731", height=40, bd=1, relief="raised")
         toolbar.pack(side="top", fill="x")
 
-        self.btn_play = tk.Button(toolbar, text="⏸ Pause", bg="#3a4150", fg="white", font=("Segoe UI", 9, "bold"), width=9, command=self._toggle_pause)
+        self.btn_play = tk.Button(toolbar, text="Pause", bg="#3a4150", fg="white", font=("Segoe UI", 9, "bold"), width=9, command=self._toggle_pause)
         self.btn_play.pack(side="left", padx=4, pady=4)
 
-        tk.Button(toolbar, text="⏭ Step", bg="#3a4150", fg="white", font=("Segoe UI", 9), width=7, command=self._step_frame).pack(side="left", padx=2, pady=4)
-        tk.Button(toolbar, text="🔄 Reset", bg="#3a4150", fg="white", font=("Segoe UI", 9), width=7, command=self._reset_current_preset).pack(side="left", padx=2, pady=4)
-        tk.Button(toolbar, text="🧹 Clear", bg="#3a4150", fg="white", font=("Segoe UI", 9), width=7, command=self._on_file_new).pack(side="left", padx=2, pady=4)
+        tk.Button(toolbar, text="Step Frame", bg="#3a4150", fg="white", font=("Segoe UI", 9), width=7, command=self._step_frame).pack(side="left", padx=2, pady=4)
+        tk.Button(toolbar, text="Reset", bg="#3a4150", fg="white", font=("Segoe UI", 9), width=7, command=self._reset_current_preset).pack(side="left", padx=2, pady=4)
+        tk.Button(toolbar, text="Clear Scene", bg="#3a4150", fg="white", font=("Segoe UI", 9), width=7, command=self._on_file_new).pack(side="left", padx=2, pady=4)
 
         # Separator
         ttk.Separator(toolbar, orient="vertical").pack(side="left", fill="y", padx=8, pady=4)
 
-        tk.Button(toolbar, text="➕ Add Block", bg="#2d6cb5", fg="white", font=("Segoe UI", 9, "bold"), command=self._open_spawner_dialog).pack(side="left", padx=4, pady=4)
-        tk.Button(toolbar, text="🌍 Gravity Config", bg="#3a4150", fg="white", font=("Segoe UI", 9), command=self._open_gravity_dialog).pack(side="left", padx=3, pady=4)
-        tk.Button(toolbar, text="⚙️ Collision Config", bg="#3a4150", fg="white", font=("Segoe UI", 9), command=self._open_collision_dialog).pack(side="left", padx=3, pady=4)
-        tk.Button(toolbar, text="💥 Shockwave Impulse", bg="#9c3b3b", fg="white", font=("Segoe UI", 9, "bold"), command=self._apply_explosion_impulse).pack(side="left", padx=6, pady=4)
+        tk.Button(toolbar, text="Add Block", bg="#2d6cb5", fg="white", font=("Segoe UI", 9, "bold"), command=self._open_spawner_dialog).pack(side="left", padx=4, pady=4)
+        tk.Button(toolbar, text="Gravity Config", bg="#3a4150", fg="white", font=("Segoe UI", 9), command=self._open_gravity_dialog).pack(side="left", padx=3, pady=4)
+        tk.Button(toolbar, text="Collision Config", bg="#3a4150", fg="white", font=("Segoe UI", 9), command=self._open_collision_dialog).pack(side="left", padx=3, pady=4)
+        tk.Button(toolbar, text="Shockwave Impulse", bg="#9c3b3b", fg="white", font=("Segoe UI", 9, "bold"), command=self._apply_explosion_impulse).pack(side="left", padx=6, pady=4)
 
         # Time Scale
         tk.Label(toolbar, text="Speed:", bg="#232731", fg="#b0c0d8").pack(side="left", padx=(12, 2))
@@ -1706,17 +1706,17 @@ class PhysicsStudioApp:
 
         # Tab 1: Hierarchy & Bodies
         tab_hier = tk.Frame(notebook, bg="#20242e")
-        notebook.add(tab_hier, text="📦 Hierarchy")
+        notebook.add(tab_hier, text="Hierarchy")
         self._build_hierarchy_tab(tab_hier)
 
         # Tab 2: Visual Overlays & Display
         tab_disp = tk.Frame(notebook, bg="#20242e")
-        notebook.add(tab_disp, text="👁️ Display")
+        notebook.add(tab_disp, text="Display Options")
         self._build_display_tab(tab_disp)
 
         # Tab 3: Presets & Labs
         tab_labs = tk.Frame(notebook, bg="#20242e")
-        notebook.add(tab_labs, text="🧪 Labs")
+        notebook.add(tab_labs, text="Physics Labs")
         self._build_labs_tab(tab_labs)
 
         # Center Viewport (Matplotlib 3D)
@@ -1751,8 +1751,8 @@ class PhysicsStudioApp:
         # Buttons
         btn_bar = tk.Frame(parent, bg="#20242e")
         btn_bar.pack(fill="x", padx=4, pady=6)
-        tk.Button(btn_bar, text="🗑️ Delete", bg="#4a2828", fg="white", font=("Segoe UI", 8), command=self._delete_selected_body).pack(side="left", fill="x", expand=True, padx=1)
-        tk.Button(btn_bar, text="⚡ Wake All", bg="#2e3848", fg="white", font=("Segoe UI", 8), command=lambda: self.world.wake_all()).pack(side="left", fill="x", expand=True, padx=1)
+        tk.Button(btn_bar, text="Delete Selected", bg="#4a2828", fg="white", font=("Segoe UI", 8), command=self._delete_selected_body).pack(side="left", fill="x", expand=True, padx=1)
+        tk.Button(btn_bar, text="Wake All Bodies", bg="#2e3848", fg="white", font=("Segoe UI", 8), command=lambda: self.world.wake_all()).pack(side="left", fill="x", expand=True, padx=1)
 
     def _build_display_tab(self, parent):
         pad = {'padx': 8, 'pady': 6}
@@ -1830,7 +1830,7 @@ class PhysicsStudioApp:
 
     def _toggle_pause(self):
         self.world.paused = not self.world.paused
-        self.btn_play.config(text="▶ Play" if self.world.paused else "⏸ Pause")
+        self.btn_play.config(text="Play" if self.world.paused else "Pause")
 
     def _step_frame(self):
         self.world.step(1.0 / 60.0)
