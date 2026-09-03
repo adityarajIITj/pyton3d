@@ -219,6 +219,8 @@ class Quaternion:
 
     def __repr__(self): return f"Quat({self.x:.3f}, {self.y:.3f}, {self.z:.3f}, {self.w:.3f})"
     def to_list(self): return [self.x, self.y, self.z, self.w]
+    def __add__(self, o): return Quaternion(self.x + o.x, self.y + o.y, self.z + o.z, self.w + o.w)
+    def __sub__(self, o): return Quaternion(self.x - o.x, self.y - o.y, self.z - o.z, self.w - o.w)
 
     def __mul__(self, o):
         if isinstance(o, Quaternion):
@@ -1601,14 +1603,17 @@ class CollisionWindow(tk.Toplevel):
 # ============================================================================
 
 class PhysicsStudioApp:
-    def __init__(self, root: tk.Tk):
+    def __init__(self, root: tk.Tk, world: Optional['PhysicsWorld'] = None):
         self.root = root
         self.root.title("Pyton3D: 3D Physics Simulation Studio and CAD Workbench (Built From Scratch)")
         self.root.geometry("1240x800")
         self.root.configure(bg="#1a1e26")
 
-        self.world = PhysicsWorld()
-        SceneManager.create_default_ground(self.world)
+        if world is not None:
+            self.world = world
+        else:
+            self.world = PhysicsWorld()
+            SceneManager.create_default_ground(self.world)
 
         self.show_aabb = tk.BooleanVar(value=False)
         self.show_contacts = tk.BooleanVar(value=True)
@@ -2134,10 +2139,14 @@ class EmbeddedMatplotlibRenderer:
 # SECTION 12: MAIN ENTRY POINT
 # ============================================================================
 
-def main():
+def launch_studio(world: Optional['PhysicsWorld'] = None):
+    """Launch the interactive 3D Physics Simulation Studio and CAD Workbench."""
     root = tk.Tk()
-    app = PhysicsStudioApp(root)
+    app = PhysicsStudioApp(root, world=world)
     root.mainloop()
+
+def main():
+    launch_studio()
 
 if __name__ == "__main__":
     main()
